@@ -11,6 +11,8 @@ I believe it would be easier to just have a popup when a new question comes in t
 
 #Implementation
 
+-selenium, phantomJS, beautiful soup 4, python3.3, PyQt4
+
 - StackOverflow is using web socket to send real time updates.
 - Use phnatomJS + selenium to login in stackoverflow
 - Use beautiful soup to look for the "new questions" element
