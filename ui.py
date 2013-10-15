@@ -11,7 +11,7 @@ class Dialog(QtGui.QDialog):
 
     def __init__(self):
         QtGui.QDialog.__init__(self)
-        self.setWindowTitle("Title")
+        self.setWindowTitle("New Questions")
 
         self.qlist = QtGui.QListWidget()
 
@@ -50,7 +50,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
             return
 
         self.dialog = Dialog()
-        self.dialog.add_questions(["----","____"])
+        self.dialog.add_questions(["Question 1","Question 2"])
         self.dialog.show()
 
 
@@ -62,7 +62,7 @@ def main():
     trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), widget)
     trayIcon.show()
     time.sleep(1)
-    trayIcon.showMessage("Foo!!!", "Bar!!!", QtGui.QSystemTrayIcon.NoIcon)
+    trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
     sys.exit(app.exec_())
 
 
