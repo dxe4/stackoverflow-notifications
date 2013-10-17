@@ -31,7 +31,7 @@ class Scrapper():
         q = WebDriverWait(self.driver, 15).until(
             lambda driver: driver.find_elements_by_css_selector(".textbox[name=q]"))
         q = q[0]
-        q.send_keys("[]" % tag)
+        q.send_keys("[%s]" % tag)
         q.send_keys(Keys.RETURN)
 
     def exit(self):
