@@ -1,10 +1,12 @@
+__author__ = 'papaloizouc'
+
 import sys
 from PyQt4 import QtGui,QtCore
 import signal
 import time
 
 
-def doSomething():
+def _exit():
     sys.exit(-123)
 
 class Dialog(QtGui.QDialog):
@@ -37,7 +39,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
         self.menu = QtGui.QMenu(parent)
 
         self.exitAction = self.menu.addAction("Exit")
-        self.exitAction.triggered.connect(doSomething)
+        self.exitAction.triggered.connect(_exit)
         self.activated.connect(self.clicked)
         self.setContextMenu(self.menu)
 
