@@ -4,10 +4,25 @@ import sys
 from PyQt4 import QtGui,QtCore
 import signal
 import time
+from scrapper import Scrapper
 
+EMAIL = ""
+PASSWORD = ""
 
 def _exit():
     sys.exit(-123)
+
+class View:
+    def __init__(self):
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        app = QtGui.QApplication(sys.argv)
+        app.setQuitOnLastWindowClosed(False)
+        widget = QtGui.QWidget()
+        trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), widget)
+        trayIcon.show()
+        time.sleep(1)
+        trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
+        sys.exit(app.exec_())
 
 class Dialog(QtGui.QDialog):
 
@@ -57,16 +72,11 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 
 
 def main():
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-    app = QtGui.QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
-    widget = QtGui.QWidget()
-    trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), widget)
-    trayIcon.show()
-    time.sleep(1)
-    trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
-    sys.exit(app.exec_())
-
+    scrapper = Scrapper()
+    scrapper.login(EMAIL, PASSWORD)
+    scrapper.search_tag("python")
+    view = View()
+    print("dsa")
 
 if __name__ == '__main__':
     main()
