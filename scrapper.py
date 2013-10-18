@@ -32,7 +32,7 @@ class Scrapper():
         q.send_keys("[%s]" % tag)
         q.send_keys(Keys.RETURN)
 
-    def exit(self):
+    def exit_(self):
         print("goodbye see you soon")
         self.driver.close()
         sys.exit(-123)
