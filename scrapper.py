@@ -44,16 +44,16 @@ class Scrapper():
         q = self.wait_for(15, lambda driver: driver.find_elements_by_css_selector(".textbox[name=q]"))[0]
         q.send_keys("[%s]" % tag)
         q.send_keys(Keys.RETURN)
-        self.find_questions()
+        self.wait_for(15, lambda driver: self.driver.find_element_by_css_selector(QUESTION))
+        self.find_questions(self.driver.page_source)
 
     def exit_(self):
         print("goodbye see you soon")
         self.driver.close()
         sys.exit(-123)
 
-    def find_questions(self):
-        self.wait_for(15, lambda driver: self.driver.find_element_by_css_selector(QUESTION))
-        soup = BeautifulSoup(self.driver.page_source)
+    def find_questions(self,html):
+        soup = BeautifulSoup(html)
         for question_element in soup.select(QUESTION):
             question = self.create_question(question_element)
             print(str(question))
