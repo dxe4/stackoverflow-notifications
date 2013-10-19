@@ -7,7 +7,7 @@ class Model:
 
 
 class Question:
-    def __init__(self, id, title, user, link, votes, answers, views, tags):
+    def __init__(self, id, title, user, link, votes, answers, views, tags, time):
         self.id = id
         self.user = user
         self.title = title
@@ -16,6 +16,7 @@ class Question:
         self.answers = answers
         self.views = views
         self.tags = tags
+        self.time = time
 
     def __str__(self):
         return str(vars(self))
