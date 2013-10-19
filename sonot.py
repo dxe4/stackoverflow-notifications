@@ -1,10 +1,8 @@
 from scrapper import Scrapper
-import sys
 from ui import View
 
 EMAIL = ""
 PASSWORD = ""
-
 
 if __name__ == '__main__':
     scrapper = Scrapper()
