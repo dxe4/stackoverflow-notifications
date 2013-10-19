@@ -27,7 +27,7 @@ class Scrapper():
 
 
     def login(self, email, password):
-        print("loging in.... %s " % (email))
+        print("logging in.... %s " % (email))
         self.driver.get(WEBSITE + "/users/login#log-in")
         frame = self.wait_for(15, lambda driver: driver.find_element_by_id("affiliate-signin-iframe"))
         self.driver.switch_to_frame(frame)
@@ -45,18 +45,24 @@ class Scrapper():
         q.send_keys("[%s]" % tag)
         q.send_keys(Keys.RETURN)
         self.wait_for(15, lambda driver: self.driver.find_element_by_css_selector(QUESTION))
-        self.find_questions(self.driver.page_source)
 
     def exit_(self):
         print("goodbye see you soon")
         self.driver.close()
         sys.exit(-123)
 
-    def find_questions(self,html):
+    def find_questions(self):
+        return self._find_questions(self.driver.page_source)
+
+    def _find_questions(self,html):
         soup = BeautifulSoup(html)
+        questions = []
         for question_element in soup.select(QUESTION):
             question = self.create_question(question_element)
-            print(str(question))
+            questions.append(question)
+        return questions
+
+#new-post-activity
 
     def create_question(self, element:Tag) -> Question:
         id = element.attrs["id"]
