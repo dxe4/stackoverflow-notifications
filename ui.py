@@ -1,24 +1,22 @@
 __author__ = 'papaloizouc'
 
-import sys
-from PyQt4 import QtGui, QtCore
-
 import time
+from PyQt4 import QtGui, QtCore
 from model import Model
 
 
-global _model
-
 class View:
-    def __init__(self, exit_callback, model:Model):
+    def __init__(self,model:Model):
+        global _model
         _model = model
         self.widget = QtGui.QWidget()
-        self.trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), self.widget, exit_callback=exit_callback)
+        self.trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), self.widget)
         self.trayIcon.show()
         time.sleep(1)
         self.trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
 
-
+    def register_exit_callback(self,exit_callback):
+        self.trayIcon.register_exit_callback(exit_callback)
 
 class Dialog(QtGui.QDialog):
     def __init__(self):
@@ -27,13 +25,12 @@ class Dialog(QtGui.QDialog):
         self.list_view = ListView()
 
         hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(self.qlist)
+        hbox.addWidget(self.list_view)
         self.setLayout(hbox)
 
 
     def add_questions(self,questions):
-        self.list_view.clear()
-        for question in self.questions:
+        for question in questions:
             self.list_view.addItem(QuestionView(question))
 
 
@@ -46,11 +43,6 @@ class ListView(QtGui.QWidget):
     def addItem(self,item):
         self.layout.addWidget(item)
 
-    def clear(self):
-        self.layout = QtGui.QVBoxLayout()
-        self.setLayout(self.layout)
-
-
 
 class QuestionView(QtGui.QWidget):
     def __init__(self,question):
@@ -58,47 +50,41 @@ class QuestionView(QtGui.QWidget):
         self.add()
 
     def add(self):
-
         hbox = QtGui.QHBoxLayout()
         hbox2 = QtGui.QHBoxLayout()
-        vbox2 = QtGui.QVBoxLayout()
-        vbox3 = QtGui.QVBoxLayout()
 
         hbox.addWidget(QtGui.QLabel("test            -"))
-
-        vbox2.addWidget(QtGui.QLabel("testv1"))
-        vbox2.addWidget(QtGui.QLabel("testv"))
-
-        vbox3.addWidget(QtGui.QLabel("testv1"))
-        vbox3.addWidget(QtGui.QLabel("testv"))
-
-        hbox2.addLayout(vbox2)
-        hbox2.addLayout(vbox3)
+        hbox2.addWidget(QtGui.QLabel("testv1"))
+        hbox2.addWidget(QtGui.QLabel("testv"))
+        hbox2.addWidget(QtGui.QLabel("testv1"))
+        hbox2.addWidget(QtGui.QLabel("testv"))
 
         hbox.addLayout(hbox2)
         self.setLayout(hbox)
 
 
 class SystemTrayIcon(QtGui.QSystemTrayIcon):
-    def __init__(self, icon, parent=None, exit_callback=None):
+    def __init__(self, icon, parent=None):
         QtGui.QSystemTrayIcon.__init__(self, icon, parent)
         self.dialog = None
         self.menu = QtGui.QMenu(parent)
 
-        self.exitAction = self.menu.addAction("Exit")
-
-        QtCore.QObject.connect(self.exitAction, QtCore.SIGNAL('triggered()'), exit_callback)
-        QtCore.QObject.connect(self, QtCore.SIGNAL('activated()'), self.clicked)
-
+    def register_exit_callback(self,exit_callback):
+        self.activated.connect(self.onClicked)
         self.setContextMenu(self.menu)
+        self.exitAction = self.menu.addAction("Exit")
+        QtCore.QObject.connect(self.exitAction, QtCore.SIGNAL('triggered()'), exit_callback)
+        pass
 
-    def clicked(self, *args, **kwargs):
-        if args[0] == 1:#right click is for menu
+
+    def onClicked(self, *args, **kwargs):
+        if args[0] == 1: #right click is for menu
             return
 
-        if self.dialog is not None:#hide if all-ready exists
-            self.dialog = None
+        if hasattr(self,"dialog")  and self.dialog: #hide if all-ready exists
+            del self.dialog
             return
 
         self.dialog = Dialog()
+        self.dialog.add_questions(_model.questions)
         self.dialog.show()
