@@ -46,10 +46,10 @@ class Scrapper():
         q.send_keys(Keys.RETURN)
         self.wait_for(15, lambda driver: self.driver.find_element_by_css_selector(QUESTION))
 
-    def exit_(self):
+    def exit_(self,code):
         print("goodbye see you soon")
         self.driver.close()
-        sys.exit(-123)
+        sys.exit(code)
 
     def find_questions(self):
         return self._find_questions(self.driver.page_source)

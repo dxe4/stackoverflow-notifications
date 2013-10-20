@@ -2,25 +2,22 @@ __author__ = 'papaloizouc'
 
 import sys
 from PyQt4 import QtGui, QtCore
-import signal
+
 import time
 from model import Model
 
-signal.signal(signal.SIGINT, signal.SIG_DFL)
-app = QtGui.QApplication(sys.argv)
-app.setQuitOnLastWindowClosed(False)
-app.setFont(QtGui.QFont("Monospace", 13))
+
 global _model
 
 class View:
     def __init__(self, exit_callback, model:Model):
         _model = model
-        widget = QtGui.QWidget()
-        trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), widget, exit_callback=exit_callback)
-        trayIcon.show()
+        self.widget = QtGui.QWidget()
+        self.trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), self.widget, exit_callback=exit_callback)
+        self.trayIcon.show()
         time.sleep(1)
-        trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
-        exit_callback(app.exec_())
+        self.trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
+
 
 
 class Dialog(QtGui.QDialog):
