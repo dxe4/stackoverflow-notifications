@@ -2,6 +2,8 @@
 stackoverflow-notifications
 =========
 
+Under construction, will update the Readme when it's done.
+
 Create notifications for new questions in a given tag.
 
 I started this because stack overflow doesn't have any system tray notifications for new questions.
