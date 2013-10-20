@@ -72,7 +72,7 @@ class Scrapper():
         title = title_element.text
         link = WEBSITE + title_element.attrs["href"]
         user_name = element.select(USER_NAME)[0].text
-        reputation_string = element.select(REPUTATION)[0].text.replace(",", "").replace("k", "")
+        reputation_string = element.select(REPUTATION)[0].text.replace(",", "").replace("k", "000")
         reputation = float(reputation_string)
         tags = [i.text for i in element.select(TAG)]
         votes = int(element.select(VOTES)[0].text)
