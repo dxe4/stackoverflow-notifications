@@ -1,12 +1,14 @@
 __author__ = 'papaloizouc'
 
 import time
+import math
 from PyQt4 import QtGui, QtCore
 from model import Model
+from model import Question
 
 
 class View:
-    def __init__(self,model:Model):
+    def __init__(self, model:Model):
         global _model
         _model = model
         self.widget = QtGui.QWidget()
@@ -15,8 +17,9 @@ class View:
         time.sleep(1)
         self.trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
 
-    def register_exit_callback(self,exit_callback):
+    def register_exit_callback(self, exit_callback):
         self.trayIcon.register_exit_callback(exit_callback)
+
 
 class Dialog(QtGui.QDialog):
     def __init__(self):
@@ -29,9 +32,10 @@ class Dialog(QtGui.QDialog):
         self.setLayout(hbox)
 
 
-    def add_questions(self,questions):
-        for question in questions:
+    def add_questions(self, questions):
+        for count, question in enumerate(questions):
             self.list_view.addItem(QuestionView(question))
+        self.list_view.addItem(QtGui.QWidget())
 
 
 class ListView(QtGui.QWidget):
@@ -40,20 +44,35 @@ class ListView(QtGui.QWidget):
         self.layout = QtGui.QVBoxLayout()
         self.setLayout(self.layout)
 
-    def addItem(self,item):
+    def addItem(self, item, stretch=1):
         self.layout.addWidget(item)
 
 
 class QuestionView(QtGui.QWidget):
-    def __init__(self,question):
+    def __init__(self, question:Question):
         QtGui.QWidget.__init__(self)
-        self.add()
+        self.add(question)
+        multiply = math.ceil((len(question.title) / 29))
+        height = 50 * multiply if multiply else 50
+        height = height - ((multiply - 1) * 29)
+        self.setMinimumWidth(600)
+        self.setMinimumHeight(height)
+        self.setMaximumHeight(height)
 
-    def add(self):
+
+    def add(self, question:Question):
         hbox = QtGui.QHBoxLayout()
         hbox2 = QtGui.QHBoxLayout()
 
-        hbox.addWidget(QtGui.QLabel("test            -"))
+        hbox_title = QtGui.QHBoxLayout()
+        l_title = QtGui.QLabel("Ttile: ")
+        hbox_title.addWidget(l_title)
+        te_title = QtGui.QTextEdit(question.title)
+        te_title.setReadOnly(True)
+        hbox_title.addWidget(te_title)
+
+        hbox.addLayout(hbox_title)
+
         hbox2.addWidget(QtGui.QLabel("testv1"))
         hbox2.addWidget(QtGui.QLabel("testv"))
         hbox2.addWidget(QtGui.QLabel("testv1"))
@@ -69,7 +88,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
         self.dialog = None
         self.menu = QtGui.QMenu(parent)
 
-    def register_exit_callback(self,exit_callback):
+    def register_exit_callback(self, exit_callback):
         self.activated.connect(self.onClicked)
         self.setContextMenu(self.menu)
         self.exitAction = self.menu.addAction("Exit")
@@ -81,7 +100,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
         if args[0] == 1: #right click is for menu
             return
 
-        if hasattr(self,"dialog")  and self.dialog: #hide if all-ready exists
+        if hasattr(self, "dialog") and self.dialog: #hide if all-ready exists
             del self.dialog
             return
 
