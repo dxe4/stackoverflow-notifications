@@ -12,6 +12,7 @@ PASSWORD = ""
 
 
 
+#TODO deal with exception in another thread. also must exit selenoium webdriver if process is killed.
 def run_scrapper(scrapper:Scrapper, model:Model):
     #scrapper.model = model
     #scrapper.login(EMAIL, PASSWORD)
