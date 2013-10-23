@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from model import User, Question, Model
 from ui import View
-from selenium.selenium import selenium
 
 QUESTION = "[id^=question-summary-]"
 QUESTION_TITLE = ".question-hyperlink"
@@ -27,6 +26,7 @@ class Scrapper():
     def __init__(self,model:Model,view:View):
         self.driver = webdriver.Firefox()
         self.model = model
+        self.view = view
 
     def login(self, email, password):
         print("logging in.... %s " % (email))
@@ -48,6 +48,7 @@ class Scrapper():
         q.send_keys(Keys.RETURN)
         self.wait_for(15, lambda driver: self.driver.find_element_by_css_selector(QUESTION))
         self.model.questions = self.find_questions()
+        self.view.show_questions(self.model.questions[:5])
 
     def exit_(self):
         print("goodbye see you soon")

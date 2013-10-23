@@ -15,10 +15,14 @@ class View:
         self.trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), self.widget)
         self.trayIcon.show()
         time.sleep(1)
-        self.trayIcon.showMessage("New Questions !!!", "Question 1", QtGui.QSystemTrayIcon.NoIcon)
+
 
     def register_exit_callback(self, exit_callback):
         self.trayIcon.register_exit_callback(exit_callback)
+
+    def show_questions(self,questions:list):
+        build_string = "\n\n".join([i.title[:50] for i in questions])
+        self.trayIcon.showMessage("%s New Questions" % len(questions), build_string, QtGui.QSystemTrayIcon.NoIcon)
 
 
 class SystemTrayIcon(QtGui.QSystemTrayIcon):
