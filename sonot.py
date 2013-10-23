@@ -196,7 +196,6 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
         self.setContextMenu(self.menu)
         self.exitAction = self.menu.addAction("Exit")
         QtCore.QObject.connect(self.exitAction, QtCore.SIGNAL('triggered()'), exit_callback)
-        pass
 
 
     def onClicked(self, *args, **kwargs):
