@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from model import User, Question, Model
 from ui import View
+from selenium.selenium import selenium
 
 QUESTION = "[id^=question-summary-]"
 QUESTION_TITLE = ".question-hyperlink"
@@ -50,7 +51,10 @@ class Scrapper():
 
     def exit_(self):
         print("goodbye see you soon")
-        self.driver.close()
+        try:
+            self.driver.close()
+        except:
+            print("couldn't close driver, ignore if you closed webbrowser manually")
         sys.exit(123)
 
     def find_questions(self):
