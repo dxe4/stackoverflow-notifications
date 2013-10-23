@@ -16,7 +16,6 @@ EMAIL = ""
 PASSWORD = ""
 
 
-
 def init_app() -> QtGui.QApplication:
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QtGui.QApplication(sys.argv)
@@ -138,7 +137,7 @@ class Scrapper():
             try:
                 element = self.wait_for(200, lambda driver: driver.find_elements_by_css_selector(Scrapper.NEW_QUESTION))
             except Exception as e:#not important no new questions found...
-                print("error" + e)
+                print(e)
                 element = None
             if element:
                 element[0].click()
