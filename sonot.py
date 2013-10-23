@@ -15,17 +15,6 @@ from bs4.element import Tag
 EMAIL = ""
 PASSWORD = ""
 
-QUESTION = "[id^=question-summary-]"
-QUESTION_TITLE = ".question-hyperlink"
-USER_NAME = ".user-details [href^=/users/]"
-REPUTATION = ".reputation-score"
-TAG = ".post-tag"
-VOTES = ".vote-count-post strong"
-ANSWERS = ".status strong"
-VIEWS = ".views"
-WEBSITE = "http://www.stackoverflow.com"
-TIME = ".relativetime"
-NEW_QUESTION = ".new-post-activity"
 
 
 def init_app() -> QtGui.QApplication:
@@ -67,13 +56,25 @@ class User:
 
 
 class Scrapper():
+    QUESTION = "[id^=question-summary-]"
+    QUESTION_TITLE = ".question-hyperlink"
+    USER_NAME = ".user-details [href^=/users/]"
+    REPUTATION = ".reputation-score"
+    TAG = ".post-tag"
+    VOTES = ".vote-count-post strong"
+    ANSWERS = ".status strong"
+    VIEWS = ".views"
+    WEBSITE = "http://www.stackoverflow.com"
+    TIME = ".relativetime"
+    NEW_QUESTION = ".new-post-activity"
+
     def __init__(self, model):
         self.driver = webdriver.Firefox()
         self.model = model
 
     def login(self, email, password):
         print("logging in.... %s " % (email))
-        self.driver.get(WEBSITE + "/users/login#log-in")
+        self.driver.get(Scrapper.WEBSITE + "/users/login#log-in")
         frame = self.wait_for(15, lambda driver: driver.find_element_by_id("affiliate-signin-iframe"))
         self.driver.switch_to_frame(frame)
 
@@ -89,7 +90,7 @@ class Scrapper():
         q = self.wait_for(15, lambda driver: driver.find_elements_by_css_selector(".textbox[name=q]"))[0]
         q.send_keys("[%s]" % tag)
         q.send_keys(Keys.RETURN)
-        self.wait_for(15, lambda driver: self.driver.find_element_by_css_selector(QUESTION))
+        self.wait_for(15, lambda driver: self.driver.find_element_by_css_selector(Scrapper.QUESTION))
         self.model.questions = self.find_questions()
 
 
@@ -107,24 +108,24 @@ class Scrapper():
     def _find_questions(self, html):
         soup = BeautifulSoup(html)
         questions = []
-        for question_element in soup.select(QUESTION):
+        for question_element in soup.select(Scrapper.QUESTION):
             question = self.create_question(question_element)
             questions.append(question)
         return questions
 
     def create_question(self, element:Tag) -> Question:
         id = element.attrs["id"]
-        title_element = element.select(QUESTION_TITLE)[0]
+        title_element = element.select(Scrapper.QUESTION_TITLE)[0]
         title = title_element.text
-        link = WEBSITE + title_element.attrs["href"]
-        user_name = element.select(USER_NAME)[0].text
-        reputation_string = element.select(REPUTATION)[0].text.replace(",", "").replace("k", "000")
+        link = Scrapper.WEBSITE + title_element.attrs["href"]
+        user_name = element.select(Scrapper.USER_NAME)[0].text
+        reputation_string = element.select(Scrapper.REPUTATION)[0].text.replace(",", "").replace("k", "000")
         reputation = float(reputation_string)
-        tags = [i.text for i in element.select(TAG)]
-        votes = int(element.select(VOTES)[0].text)
-        answers = int(element.select(ANSWERS)[0].text)
-        views = int(element.select(VIEWS)[0].text.replace("views", ""))
-        time = element.select(TIME)[0].text
+        tags = [i.text for i in element.select(Scrapper.TAG)]
+        votes = int(element.select(Scrapper.VOTES)[0].text)
+        answers = int(element.select(Scrapper.ANSWERS)[0].text)
+        views = int(element.select(Scrapper.VIEWS)[0].text.replace("views", ""))
+        time = element.select(Scrapper.TIME)[0].text
 
         user = User(user_name, reputation)
         return Question(id, title, user, link, votes, answers, views, tags, time)
@@ -135,7 +136,7 @@ class Scrapper():
     def wait_for_questions(self, ui_signal):
         while True:
             try:
-                element = self.wait_for(200, lambda driver: driver.find_elements_by_css_selector(NEW_QUESTION))
+                element = self.wait_for(200, lambda driver: driver.find_elements_by_css_selector(Scrapper.NEW_QUESTION))
             except Exception as e:#not important no new questions found...
                 print("error" + e)
                 element = None
