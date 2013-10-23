@@ -11,7 +11,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-
+#TODO command line arguements email password(input) tag browser
 EMAIL = ""
 PASSWORD = ""
 
