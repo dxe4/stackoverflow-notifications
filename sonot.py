@@ -16,7 +16,6 @@ EMAIL = ""
 PASSWORD = ""
 
 
-
 def init_app() -> QtGui.QApplication:
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QtGui.QApplication(sys.argv)
@@ -31,11 +30,9 @@ class Model:
         self.previous_questions = set()
 
     def update_questions(self,questions):
-        self.previous_questions.union(self.questions)
+        self.previous_questions = self.previous_questions.union(self.questions)
         self.questions = [i for i in questions if i not in self.previous_questions]
-        print(self.questions)
-
-        self.previous_questions.union(self.questions)
+        self.previous_questions= self.previous_questions.union(self.questions)
 
 
 class Question:
