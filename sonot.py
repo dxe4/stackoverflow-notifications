@@ -11,6 +11,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
+import time
+
 #TODO command line arguements email password(input) tag browser
 EMAIL = ""
 PASSWORD = ""
@@ -28,6 +30,16 @@ class Model:
     def __init__(self):
         self.questions = []
         self.previous_questions = set()
+        self.exception_timestamps = []
+
+    def is_exception_overflow(self):
+        self.exception_timestamps.append(int(time.time()))
+        if len(self.exception_timestamps) > 10:
+            last = self.exception_timestamps[-1:]
+            new_list = list(filter(lambda i:i==last,self.exception_timestamps))
+            if len(new_list) < 2:
+                return True
+        return False
 
     def update_questions(self,questions):
         self.previous_questions = self.previous_questions.union(self.questions)
@@ -154,6 +166,9 @@ class Scrapper():
                 element = self.wait_for(200, lambda driver: driver.find_elements_by_css_selector(Scrapper.NEW_QUESTION))
             except Exception as e:#not important no new questions found...
                 print(e)
+                if self.model.is_exception_overflow():
+                    print("Exception overflow, exiting... Something is wrong with the browser...")
+                    self.exit_()
                 element = None
             if element:
                 element[0].click()
