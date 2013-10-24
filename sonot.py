@@ -16,6 +16,7 @@ EMAIL = ""
 PASSWORD = ""
 
 
+
 def init_app() -> QtGui.QApplication:
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QtGui.QApplication(sys.argv)
@@ -27,6 +28,14 @@ def init_app() -> QtGui.QApplication:
 class Model:
     def __init__(self):
         self.questions = []
+        self.previous_questions = set()
+
+    def update_questions(self,questions):
+        self.previous_questions.union(self.questions)
+        self.questions = [i for i in questions if i not in self.previous_questions]
+        print(self.questions)
+
+        self.previous_questions.union(self.questions)
 
 
 class Question:
@@ -43,6 +52,15 @@ class Question:
 
     def __str__(self):
         return str(vars(self))
+
+    def __eq__(self, other):
+        return self.link == other.link
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def  __hash__(self):
+        return hash(self.link)
 
 
 class User:
@@ -69,6 +87,7 @@ class Scrapper():
 
     def __init__(self, model):
         self.driver = webdriver.Firefox()
+
         self.model = model
 
     def login(self, email, password):
@@ -141,7 +160,8 @@ class Scrapper():
                 element = None
             if element:
                 element[0].click()
-                ui_signal.emit(self.find_questions())
+                self.model.update_questions(self.find_questions())
+                ui_signal.emit(self.model.questions)
 
 
 class UIThread(QtCore.QThread):
