@@ -36,7 +36,7 @@ class Model:
         self.exception_timestamps.append(int(time.time()))
         if len(self.exception_timestamps) > 10:
             last = self.exception_timestamps[-1:]
-            new_list = list(filter(lambda i:i==last,self.exception_timestamps))
+            new_list = list(filter(lambda i:i==last,self.exception_timestamps[-10:]))
             if len(new_list) < 2:
                 return True
         return False
