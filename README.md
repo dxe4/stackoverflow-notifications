@@ -2,6 +2,8 @@
 stackoverflow-notifications
 =========
 
+![notification!](https://raw.github.com/papaloizouc/stackoverflow-notifications/master/stackoverflow_logo.png "notification")
+
 Under construction, will update the Readme when it's done.
 
 Create notifications for new questions in a given tag.
