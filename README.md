@@ -13,9 +13,10 @@ I started this because stack overflow doesn't have any system tray notifications
 
 I believe it would be easier to just have a popup when a new question comes in the tag.
 
+#Install:
 
-sudo bash ubuntu.sh (incomplete)
-sudo bash arch.sh (incomplete)
+    sudo bash ubuntu.sh (incomplete)
+    sudo bash arch.sh (incomplete)
 
 
 #Implementation
