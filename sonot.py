@@ -96,7 +96,7 @@ class Scrapper():
     VOTES = ".vote-count-post strong"
     ANSWERS = ".status strong"
     VIEWS = ".views"
-    WEBSITE = "http://www.stackoverflow.com"
+    WEBSITE = "http://stackoverflow.com/"
     TIME = ".relativetime"
     NEW_QUESTION = ".new-post-activity"
 
@@ -105,18 +105,23 @@ class Scrapper():
         self.driver = webdriver.Firefox(firefox_profile=profile)
         self.model = model
 
-    def login(self, email, password):
+    def login(self, email:str, password:str):
         print("logging in.... %s " % (email))
-        self.driver.get(Scrapper.WEBSITE + "/users/login#log-in")
-        frame = self.wait_for(15, lambda driver: driver.find_element_by_id("affiliate-signin-iframe"))
-        self.driver.switch_to_frame(frame)
+        self.driver.get(Scrapper.WEBSITE + "users/login#log-in")
+        if self.driver.current_url != Scrapper.WEBSITE:
+            self._login(email,password)
+        del model.password
 
-        emailElement = self.driver.find_element_by_id("email")
-        emailElement.send_keys(email)
+    def _login(self,email:str,password:str):
+            frame = self.wait_for(15, lambda driver: driver.find_element_by_id("affiliate-signin-iframe"))#if allready logged in need to skip
+            self.driver.switch_to_frame(frame)
 
-        passwordElement = self.driver.find_element_by_id("password")
-        passwordElement.send_keys(password)
-        passwordElement.send_keys(Keys.RETURN)
+            emailElement = self.driver.find_element_by_id("email")
+            emailElement.send_keys(email)
+
+            passwordElement = self.driver.find_element_by_id("password")
+            passwordElement.send_keys(password)
+            passwordElement.send_keys(Keys.RETURN)
 
     def search_tag(self, tag:str):
         print("searching for tag... %s" % (tag))
