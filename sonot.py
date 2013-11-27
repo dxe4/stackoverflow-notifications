@@ -13,9 +13,12 @@ from bs4.element import Tag
 
 import time
 
-#TODO command line arguements email password(input) tag browser
-EMAIL = ""
-PASSWORD = ""
+from os.path import expanduser
+import os
+import configparser
+
+#TODO support multiple accounts in the future
+#ACCOUNT_TYPES = ["stackexchange","google","yahoo","facebook","myopenid","livejournal","wordpress","blogger","verisign","claimid","aol"]
 
 
 def init_app() -> QtGui.QApplication:
@@ -31,6 +34,9 @@ class Model:
         self.questions = []
         self.previous_questions = set()
         self.exception_timestamps = []
+        self.userName = None
+        self.password = None
+        self.tag = None
 
     def is_exception_overflow(self):
         self.exception_timestamps.append(int(time.time()))
@@ -95,8 +101,8 @@ class Scrapper():
     NEW_QUESTION = ".new-post-activity"
 
     def __init__(self, model):
-        self.driver = webdriver.Firefox()
-
+        profile = webdriver.FirefoxProfile("/home/foobar/.mozilla/firefox/9shb6xj3.default/")
+        self.driver = webdriver.Firefox(firefox_profile=profile)
         self.model = model
 
     def login(self, email, password):
@@ -188,8 +194,8 @@ class UIThread(QtCore.QThread):
     #TODO deal with exception in another thread. also must exit selenoium webdriver if process is killed.
     def run_scrapper(self, scrapper:Scrapper, model:Model):
         scrapper.model = model
-        scrapper.login(EMAIL, PASSWORD)
-        scrapper.search_tag("java")
+        scrapper.login(model.userName, model.password)
+        scrapper.search_tag(model.tag)
         scrapper.wait_for_questions(self.ui_signal)
 
     def run(self):
@@ -197,8 +203,8 @@ class UIThread(QtCore.QThread):
 
 
 class View:
-    def __init__(self):
-        self.model = Model()
+    def __init__(self,model:Model):
+        self.model = model
         self.scrapper = Scrapper(self.model)
         self.widget = QtGui.QWidget()
         self.trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), self.widget)
@@ -239,9 +245,67 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
             return
 
 
+class Login(QtGui.QDialog):
+    def __init__(self,model:Model):
+        QtGui.QDialog.__init__(self)
+        self.model = model
+        self.textName = QtGui.QLineEdit(self)
+        self.textPass = QtGui.QLineEdit(self)
+        self.textPass.setEchoMode(QtGui.QLineEdit.Password)
+        self.buttonLogin = QtGui.QPushButton('Login', self)
+        self.buttonLogin.clicked.connect(self.handleLogin)
+        self.checkBox = QtGui.QCheckBox("")
+        self.tag = QtGui.QLineEdit("")
+        #self.combo = QtGui.QComboBox(self)
+        #for acc_type in ACCOUNT_TYPES: self.combo.addItem(acc_type)
+
+        layout = QtGui.QFormLayout(self)
+        layout.addRow("Username",self.textName)
+        layout.addRow("Password",self.textPass)
+#        layout.addRow("Account Type",self.combo )
+        layout.addRow("Tag",self.tag)
+        layout.addRow("Remember\n(won't save password)",self.checkBox)
+        layout.addRow("",self.buttonLogin)
+
+
+        settings = self.read_settings()
+        if settings:
+            self.textName.setText(settings["username"])
+            self.checkBox.setChecked(True)
+            self.tag.setText(settings["tag"])
+
+    def handleLogin(self):
+        if self.textPass.text() and self.textPass.text() and self.tag.text():
+            self.accept()
+            self.model.userName = self.textName.text()
+            self.model.password = self.textPass.text()
+            self.model.tag = self.tag.text()
+            if self.checkBox.isChecked():
+                self.remember()
+        else:
+            QtGui.QMessageBox.warning(self, 'Error', 'Bad user or password')
+
+    def remember(self):
+        with open(os.path.join(expanduser("~"),".sonot_settings"),"w") as f:
+            print("[Settings]",file=f)
+            print("username: %s"%self.model.userName,file=f)
+            print("remember: True",file=f)
+            print("tag: %s"%self.tag.text(),file=f)
+
+    def read_settings(self):
+        try:
+             config_parser = configparser.ConfigParser()
+             config_parser.read(os.path.join(expanduser("~"),".sonot_settings"))
+             return {i:config_parser.get("Settings",i) for i in config_parser.options("Settings")}
+        except:#no config file
+            pass
+
 if __name__ == '__main__':
     app = init_app()
-    view = View()
+    model = Model()
+    if Login(model).exec_() != QtGui.QDialog.Accepted:
+        sys.exit(0)
+    view = View(model)
     view.scrapper.exit_(app.exec_())
 
 
