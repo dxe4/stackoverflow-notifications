@@ -2,6 +2,7 @@
 stackoverflow-notifications
 =========
 
+![login!](https://raw.github.com/papaloizouc/stackoverflow-notifications/master/doc/login.png "login")
 ![notification!](https://raw.github.com/papaloizouc/stackoverflow-notifications/master/doc/sonot.png "notification")
 
 Under construction, will update the Readme when it's done.
