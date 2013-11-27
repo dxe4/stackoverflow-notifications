@@ -275,7 +275,7 @@ class Login(QtGui.QDialog):
         layout = QtGui.QFormLayout(self)
         layout.addRow("Username", self.textName)
         layout.addRow("Password", self.textPass)
-        layout.addRow("Account Type", self.browsers)
+        layout.addRow("Browser", self.browsers)
         layout.addRow("Tag", self.tag)
         layout.addRow("Remember\n(won't save password)", self.checkBox)
         layout.addRow("", self.buttonLogin)
