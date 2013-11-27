@@ -17,8 +17,14 @@ from os.path import expanduser
 import os
 import configparser
 
+from collections import OrderedDict
+
 #TODO support multiple accounts in the future
 #ACCOUNT_TYPES = ["stackexchange","google","yahoo","facebook","myopenid","livejournal","wordpress","blogger","verisign","claimid","aol"]
+
+_browsers = {"firefox": webdriver.Firefox, "chrome": webdriver.Chrome, "opera": webdriver.Opera}
+BROWSERS_LIST = sorted(_browsers.keys())
+BROWSERS = OrderedDict(sorted(_browsers.items(), key=lambda t: t[0]))
 
 
 def init_app() -> QtGui.QApplication:
@@ -37,20 +43,21 @@ class Model:
         self.userName = None
         self.password = None
         self.tag = None
+        self.browser = None
 
     def is_exception_overflow(self):
         self.exception_timestamps.append(int(time.time()))
         if len(self.exception_timestamps) > 10:
             last = self.exception_timestamps[-1:]
-            new_list = list(filter(lambda i:i==last,self.exception_timestamps[-10:]))
+            new_list = list(filter(lambda i: i == last, self.exception_timestamps[-10:]))
             if len(new_list) < 2:
                 return True
         return False
 
-    def update_questions(self,questions):
+    def update_questions(self, questions):
         self.previous_questions = self.previous_questions.union(self.questions)
         self.questions = [i for i in questions if i not in self.previous_questions]
-        self.previous_questions= self.previous_questions.union(self.questions)
+        self.previous_questions = self.previous_questions.union(self.questions)
 
 
 class Question:
@@ -74,7 +81,7 @@ class Question:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def  __hash__(self):
+    def __hash__(self):
         return hash(self.link)
 
 
@@ -100,27 +107,29 @@ class Scrapper():
     TIME = ".relativetime"
     NEW_QUESTION = ".new-post-activity"
 
+
     def __init__(self, model):
-        self.driver = webdriver.Firefox()
+        self.driver = BROWSERS[model.browser]()
         self.model = model
 
     def login(self, email:str, password:str):
         print("logging in.... %s " % (email))
         self.driver.get(Scrapper.WEBSITE + "users/login#log-in")
         if self.driver.current_url != Scrapper.WEBSITE:
-            self._login(email,password)
+            self._login(email, password)
         del model.password
 
-    def _login(self,email:str,password:str):
-            frame = self.wait_for(15, lambda driver: driver.find_element_by_id("affiliate-signin-iframe"))#if allready logged in need to skip
-            self.driver.switch_to_frame(frame)
+    def _login(self, email:str, password:str):
+        frame = self.wait_for(15, lambda driver: driver.find_element_by_id(
+            "affiliate-signin-iframe"))#if allready logged in need to skip
+        self.driver.switch_to_frame(frame)
 
-            emailElement = self.driver.find_element_by_id("email")
-            emailElement.send_keys(email)
+        emailElement = self.driver.find_element_by_id("email")
+        emailElement.send_keys(email)
 
-            passwordElement = self.driver.find_element_by_id("password")
-            passwordElement.send_keys(password)
-            passwordElement.send_keys(Keys.RETURN)
+        passwordElement = self.driver.find_element_by_id("password")
+        passwordElement.send_keys(password)
+        passwordElement.send_keys(Keys.RETURN)
 
     def search_tag(self, tag:str):
         print("searching for tag... %s" % (tag))
@@ -207,7 +216,7 @@ class UIThread(QtCore.QThread):
 
 
 class View:
-    def __init__(self,model:Model):
+    def __init__(self, model:Model):
         self.model = model
         self.scrapper = Scrapper(self.model)
         self.widget = QtGui.QWidget()
@@ -250,7 +259,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 
 
 class Login(QtGui.QDialog):
-    def __init__(self,model:Model):
+    def __init__(self, model:Model):
         QtGui.QDialog.__init__(self)
         self.model = model
         self.textName = QtGui.QLineEdit(self)
@@ -260,23 +269,35 @@ class Login(QtGui.QDialog):
         self.buttonLogin.clicked.connect(self.handleLogin)
         self.checkBox = QtGui.QCheckBox("")
         self.tag = QtGui.QLineEdit("")
-        #self.combo = QtGui.QComboBox(self)
-        #for acc_type in ACCOUNT_TYPES: self.combo.addItem(acc_type)
+        self.browsers = QtGui.QComboBox(self)
+        for browser in BROWSERS.keys(): self.browsers.addItem(browser)
 
         layout = QtGui.QFormLayout(self)
-        layout.addRow("Username",self.textName)
-        layout.addRow("Password",self.textPass)
-#        layout.addRow("Account Type",self.combo )
-        layout.addRow("Tag",self.tag)
-        layout.addRow("Remember\n(won't save password)",self.checkBox)
-        layout.addRow("",self.buttonLogin)
-
+        layout.addRow("Username", self.textName)
+        layout.addRow("Password", self.textPass)
+        layout.addRow("Account Type", self.browsers)
+        layout.addRow("Tag", self.tag)
+        layout.addRow("Remember\n(won't save password)", self.checkBox)
+        layout.addRow("", self.buttonLogin)
 
         settings = self.read_settings()
-        if settings:
-            self.textName.setText(settings["username"])
-            self.checkBox.setChecked(True)
-            self.tag.setText(settings["tag"])
+        self.init_settings(settings)
+
+    def init_settings(self, settings:dict):
+        if not settings:
+            return
+
+        def setup(func:callable, key:str):
+            if key and key in settings: func(settings[key])
+
+        setup(self.textName.setText, "username")
+        setup(self.tag.setText, "tag")
+        self.checkBox.setChecked(True)
+        if "browser" in settings:
+            print(BROWSERS_LIST.index(settings["browser"]))
+
+            print(BROWSERS.keys)
+            self.browsers.setCurrentIndex(BROWSERS_LIST.index(settings["browser"]))
 
     def handleLogin(self):
         if self.textPass.text() and self.textPass.text() and self.tag.text():
@@ -284,25 +305,28 @@ class Login(QtGui.QDialog):
             self.model.userName = self.textName.text()
             self.model.password = self.textPass.text()
             self.model.tag = self.tag.text()
+            self.model.browser = str(self.browsers.currentText())
             if self.checkBox.isChecked():
-                self.remember()
+                self.memorize()
         else:
             QtGui.QMessageBox.warning(self, 'Error', 'Bad user or password')
 
-    def remember(self):
-        with open(os.path.join(expanduser("~"),".sonot_settings"),"w") as f:
-            print("[Settings]",file=f)
-            print("username: %s"%self.model.userName,file=f)
-            print("remember: True",file=f)
-            print("tag: %s"%self.tag.text(),file=f)
+    def memorize(self):
+        with open(os.path.join(expanduser("~"), ".sonot_settings"), "w") as f:
+            print("[Settings]", file=f)
+            print("username: %s" % self.model.userName, file=f)
+            print("remember: True", file=f)
+            print("tag: %s" % self.tag.text(), file=f)
+            print("browser: %s" % str(self.browsers.currentText()), file=f)
 
     def read_settings(self):
         try:
-             config_parser = configparser.ConfigParser()
-             config_parser.read(os.path.join(expanduser("~"),".sonot_settings"))
-             return {i:config_parser.get("Settings",i) for i in config_parser.options("Settings")}
+            config_parser = configparser.ConfigParser()
+            config_parser.read(os.path.join(expanduser("~"), ".sonot_settings"))
+            return {i: config_parser.get("Settings", i) for i in config_parser.options("Settings")}
         except:#no config file
             pass
+
 
 if __name__ == '__main__':
     app = init_app()
