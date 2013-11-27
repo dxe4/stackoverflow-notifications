@@ -101,8 +101,7 @@ class Scrapper():
     NEW_QUESTION = ".new-post-activity"
 
     def __init__(self, model):
-        profile = webdriver.FirefoxProfile("/home/foobar/.mozilla/firefox/9shb6xj3.default/")
-        self.driver = webdriver.Firefox(firefox_profile=profile)
+        self.driver = webdriver.Firefox()
         self.model = model
 
     def login(self, email:str, password:str):
