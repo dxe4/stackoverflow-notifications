@@ -175,7 +175,7 @@ class Scrapper():
         while True:
             try:
                 element = self.wait_for(200, lambda driver: driver.find_elements_by_css_selector(Scrapper.NEW_QUESTION))
-            except Exception as e:#not important no new questions found...
+            except Exception as e:#not important no new questions found timeout...
                 print(e)
                 if self.model.is_exception_overflow():
                     print("Exception overflow, exiting... Something is wrong with the browser...")
