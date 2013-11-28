@@ -118,7 +118,7 @@ class Scrapper():
         self.driver.get(Scrapper.WEBSITE + "users/login#log-in")
         if self.driver.current_url != Scrapper.WEBSITE:
             self._login(email, password)
-        del model.password
+        del self.model.password
 
     def _login(self, email:str, password:str):
         frame = self.wait_for(15, lambda driver: driver.find_element_by_id(
