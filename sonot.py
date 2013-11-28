@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 import signal
