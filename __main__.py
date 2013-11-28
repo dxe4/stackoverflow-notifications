@@ -1,0 +1,2 @@
+import sonot
+sonot.run()
