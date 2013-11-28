@@ -327,13 +327,16 @@ class Login(QtGui.QDialog):
         except:#no config file
             pass
 
-
-if __name__ == '__main__':
+def run():
     app = init_app()
     model = Model()
     if Login(model).exec_() != QtGui.QDialog.Accepted:
         sys.exit(0)
     view = View(model)
     view.scrapper.exit_(app.exec_())
+
+if __name__ == '__main__':
+    run()
+
 
 
