@@ -295,9 +295,6 @@ class Login(QtGui.QDialog):
         setup(self.tag.setText, "tag")
         self.checkBox.setChecked(True)
         if "browser" in settings:
-            print(BROWSERS_LIST.index(settings["browser"]))
-
-            print(BROWSERS.keys)
             self.browsers.setCurrentIndex(BROWSERS_LIST.index(settings["browser"]))
 
     def handleLogin(self):
@@ -338,6 +335,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-
-
-
