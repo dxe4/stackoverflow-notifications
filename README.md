@@ -32,7 +32,7 @@ Linux:
 
     sudo bash arch.sh
 
-    ./sonot
+    sonot
 
 
 Linux(other):
