@@ -1,5 +1,5 @@
 pacman -S python python-pyqt4 python-pip
-pip3 install selenium
+pip3 install selenium,BeautifulSoup4
 sudo mkdir -p /opt/sonot
 _dir=`pwd`
 cp -r $_dir /opt/sonot/
