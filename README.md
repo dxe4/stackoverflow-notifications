@@ -25,7 +25,8 @@ Run flat mode:
     manualy: python xtsi.py doc/example_flat.xls f
 
 
-#Install (it works for me but if you have a problem let me know):
+#Install
+(it works for me but if you have a problem let me know):
 
 You need Python3 (i used 3.3), PyQt4, selenium, BeautifulSoup4. I tried to automate it with sh files.
 
