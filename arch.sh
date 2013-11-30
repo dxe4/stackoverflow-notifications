@@ -1,4 +1,4 @@
-pacman -S python3 python-pyqt4 python-pip
+pacman -S python python-pyqt4 python-pip
 pip3 install selenium
 sudo mkdir -p /opt/sonot
 _dir=`pwd`
