@@ -13,17 +13,6 @@ I started this because stack overflow doesn't have any system tray notifications
 
 I believe it would be easier to just have a popup when a new question comes in the tag.
 
-#Examples:
-
-Run flat mode:
----
-
-    windows: flat_mode.bat doc\example_flat.xls
-
-    linux: ./flat_mode.sh doc/example_flat.xls
-
-    manualy: python xtsi.py doc/example_flat.xls f
-
 
 #Install
 (it works for me but if you have a problem let me know):
