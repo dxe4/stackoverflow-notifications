@@ -17,6 +17,7 @@ I believe it would be easier to just have a popup when a new question comes in t
 #Install
 (it works for me but if you have a problem let me know):
 
+
 *Requires (I tried to automate it with sh files) :
 -Python3 (i used 3.3)
 -PyQt4
