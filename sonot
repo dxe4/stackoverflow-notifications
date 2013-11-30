@@ -1,2 +1,2 @@
 #!/bin/sh
-python3 /usr/lib/sonot/sonot.zip
+/opt/sonot/stackoverflow-notifications/sonot.py
