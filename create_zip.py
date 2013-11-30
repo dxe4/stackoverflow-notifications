@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#decided not to go for zip because of QIcon(accepts path but not file, but may find a way to deal with it)
 import os
 import zipfile
 
