@@ -13,18 +13,50 @@ I started this because stack overflow doesn't have any system tray notifications
 
 I believe it would be easier to just have a popup when a new question comes in the tag.
 
-#Install:
+#Examples:
 
-    sudo bash ubuntu.sh (incomplete)
-    sudo bash arch.sh (incomplete)
+Run flat mode:
+---
+
+    windows: flat_mode.bat doc\example_flat.xls
+
+    linux: ./flat_mode.sh doc/example_flat.xls
+
+    manualy: python xtsi.py doc/example_flat.xls f
 
 
-#Implementation
+#Install (it works for me but if you have a problem let me know):
 
-- selenium, phantomJS, beautiful soup 4, python3.3, PyQt4
+You need Python3 (i used 3.3), PyQt4, selenium, BeautifulSoup4. I tried to automate it with sh files.
 
-- StackOverflow is using web socket to send real time updates.
-- Use phnatomJS + selenium to login in stackoverflow
-- Use beautiful soup to look for the "new questions" element
-- if new questions are found, give a system notification
-- Click on system tray to get the question link / more question info
+Linux:
+---
+
+    sudo bash ubuntu.sh
+
+    sudo bash arch.sh
+
+    ./sonot
+
+
+Linux(other):
+---
+
+    install python3.3, python3-pyqt4, python3-pip
+
+    pip-3.3 install selenium,BeautifulSoup4
+
+    python sonot.py
+
+    You may as well copy it in /opt and and a shortcut in /bin
+
+Mac
+---
+
+    It should be something similar with Linux(other) section, any help to automate is appreciated.
+
+
+Windows
+---
+
+    The only way i know of installing PyQt on windows is to click next all the time...
