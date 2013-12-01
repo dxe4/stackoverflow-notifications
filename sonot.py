@@ -233,7 +233,7 @@ class View:
         self.model = model
         self.scrapper = Scrapper(self.model)
         self.widget = QtGui.QWidget()
-        self.trayIcon = SystemTrayIcon(QtGui.QIcon("stackoverflow_logo.png"), self.widget)
+        self.trayIcon = SystemTrayIcon(QtGui.QIcon(os.path.dirname(os.path.realpath(__file__))+"/stackoverflow_logo.png"), self.widget)
         self.trayIcon.show()
         self.thread = UIThread(self.scrapper, self.model)
         self.thread.ui_signal.connect(self.show_questions)
